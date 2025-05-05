@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>razi</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 1s ease-in-out;
+            flex-direction: column;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 40px;
+        }
+
+        .left-wrapper, .center-wrapper, .right-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .clock-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .clock-container, .schedule-container, .teacher-container, .pdf-container {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            animation: fadeIn 2s ease-in-out;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .clock-container {
+            padding: 2.5rem;
+        }
+
+        .schedule-container {
+            width: 350px;
+            padding: 2.5rem;
+        }
+
+        .teacher-container {
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .pdf-container {
+            width: 250px;
+            padding: 1.5rem;
+        }
+
+        .pdf-title {
+            font-size: 1.6rem;
+            color: #000000;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .pdf-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pdf-item {
+            display: block;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #000000;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-item:hover {
+            background: #4f46e5;
+            color: #ffffff;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .name {
+            font-size: 2.2rem;
+            color: #000000;
+            margin-bottom: 1.2rem;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+        }
+
+        .time {
+            font-size: 4.8rem;
+            color: #000000;
+            letter-spacing: 3px;
+            margin: 0;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            font-weight: 500;
+        }
+
+        .date {
+            font-size: 1.3rem;
+            color: #000000;
+            margin-top: 0.8rem;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .time:hover {
+            transform: scale(1.05);
+        }
+
+        .schedule-title {
+            font-size: 2rem;
+            color: #000000;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .period {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .period.active {
+            background: #4f46e5;
+            color: #ffffff;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .period.active .period-time {
+            color: #ffffff;
+        }
+
+        .period-name {
+            font-size: 1.2rem;
+            color: #000000;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .period.active .period-name {
+            color: #ffd700;
+            font-size: 1.3rem;
+        }
+
+        .period-time {
+            font-size: 1.1rem;
+            color: #000000;
+            font-weight: 400;
+        }
+
+        .no-schedule {
+            font-size: 1.2rem;
+            color: #000000;
+            font-weight: 500;
+            padding: 10px;
+            margin: 8px 0;
+            text-align: center;
+        }
+
+        .teacher-title {
+            font-size: 1.1rem;
+            color: #000000;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .teacher-name {
+            font-size: 1.6rem;
+            color: #000000;
+            font-weight: 700;
+        }
+
+        .daily-schedule {
+            display: none;
+        }
+
+        .daily-schedule.active {
+            display: block;
+        }
+
+        @media (max-width: 800px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .left-wrapper, .center-wrapper, .right-wrapper {
+                align-items: center;
+                width: 100%;
+            }
+
+            .schedule-container {
+                width: 90%;
+                margin-top: 20px;
+                padding: 2rem;
+            }
+
+            .teacher-container {
+                max-width: 90%;
+            }
+
+            .pdf-container {
+                width: 90%;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .name {
+                font-size: 1.6rem;
+            }
+
+            .time {
+                font-size: 2.8rem;
+            }
+
+            .clock-container, .schedule-container, .teacher-container, .pdf-container {
+                padding: 1.5rem 2rem;
+            }
+
+            .date {
+                font-size: 1rem;
+                font-weight: 700;
+            }
+
+            .schedule-title, .pdf-title {
+                font-size: 1.6rem;
+            }
+
+            .period-name, .no-schedule, .pdf-item {
+                font-size: 1rem;
+            }
+
+            .period-time {
+                font-size: 0.9rem;
+            }
+
+            .period {
+                padding: 8px;
+                margin: 6px 0;
+            }
+
+            .teacher-name {
+                font-size: 1.3rem;
+            }
+
+            .teacher-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-wrapper">
+            <div class="clock-wrapper">
+                <div class="clock-container">
+                    <div class="name">ALIF UNION</div>
+                    <div class="time" id="time">12:00:00 AM</div>
+                    <div class="date" id="date">January 1, 2025</div>
+                </div>
+                <div class="teacher-container">
+                    <div class="teacher-title">Current usthad</div>
+                    <div class="teacher-name" id="teacher-name">class is not in this time</div>
+                </div>
+            </div>
+        </div>
+        <div class="center-wrapper">
+            <div class="pdf-container">
+                <div class="pdf-title">Study Materials</div>
+                <div class="pdf-list">
+                    <a href="chemestry.pdf" class="pdf-item" target="_blank">Chemistry</a>
+                    <a href="physics.pdf" class="pdf-item" target="_blank">Physics</a>
+                    <a href="hindi.pdf" class="pdf-item" target="_blank">Hindi</a>
+                    <a href="biology.pdf" class="pdf-item" target="_blank">Biology</a>
+                    <a href="geography.pdf" class="pdf-item" target="_blank">Geography</a>
+                    <a href="english.pdf" class="pdf-item" target="_blank">English</a>
+                    <a href="history.pdf" class="pdf-item" target="_blank">History</a>
+                    <a href="maths.pdf" class="pdf-item" target="_blank">Maths</a>
+                </div>
+            </div>
+        </div>
+        <div class="right-wrapper">
+            <div class="schedule-container">
+                <div class="schedule-title">Period Schedule</div>
+                <!-- Monday Schedule (9 periods) -->
+                <div class="daily-schedule" id="monday-schedule">
+                    <div class="period" data-start="07:45" data-end="08:30" data-teacher="jmashad usthad">
+                        <span class="period-name">tareeq</span>
+                        <span class="period-time">7:45 AM - 8:30 AM</span>
+                    </div>
+                    <div class="period" data-start="08:30" data-end="09:15" data-teacher="fawaz usthad">
+                        <span class="period-name">hadees</span>
+                        <span class="period-time">8:30 AM - 9:15 AM</span>
+                    </div>
+                    <div class="period" data-start="09:40" data-end="10:25" data-teacher="badhurudheen ust">
+                        <span class="period-name">fiqh</span>
+                        <span class="period-time">9:40 AM - 10:25 AM</span>
+                    </div>
+                    <div class="period" data-start="10:25" data-end="11:10" data-teacher="dulkifal ust">
+                        <span class="period-name">IT</span>
+                        <span class="period-time">10:25 AM - 11:10 AM</span>
+                    </div>
+                    <div class="period" data-start="11:20" data-end="12:05" data-teacher="hisham ust">
+                        <span class="period-name">tasawwuf</span>
+                        <span class="period-time">11:20 AM - 12:05 PM</span>
+                    </div>
+                    <div class="period" data-start="12:05" data-end="12:50" data-teacher="highness ust">
+                        <span class="period-name">Chemistry</span>
+                        <span class="period-time">12:05 PM - 12:50 PM</span>
+                    </div>
+                    <div class="period" data-start="14:00" data-end="14:40" data-teacher="basith ust">
+                        <span class="period-name">adab</span>
+                        <span class="period-time">2:00 PM - 2:40 PM</span>
+                    </div>
+                    <div class="period" data-start="14:50" data-end="15:30" data-teacher="badhurudheen ust">
+                        <span class="period-name">nahv</span>
+                        <span class="period-time">2:50 PM - 3:30 PM</span>
+                    </div>
+                    <div class="period" data-start="15:30" data-end="16:10" data-teacher="TBA">
+                        <span class="period-name">History</span>
+                        <span class="period-time">3:30 PM - 4:10 PM</span>
+                    </div>
+                </div>
+                <!-- Tuesday Schedule (9 periods) -->
+                <div class="daily-schedule" id="tuesday-schedule">
+                    <div class="period" data-start="07:45" data-end="08:30" data-teacher="badharudheen ust">
+                        <span class="period-name">nahv</span>
+                        <span class="period-time">7:45 AM - 8:30 AM</span>
+                    </div>
+                    <div class="period" data-start="08:30" data-end="09:15" data-teacher="jmashad ust">
+                        <span class="period-name">malayalam</span>
+                        <span class="period-time">8:30 AM - 9:15 AM</span>
+                    </div>
+                    <div class="period" data-start="09:40" data-end="10:25" data-teacher="jabir ust">
+                        <span class="period-name">Biology</span>
+                        <span class="period-time">9:40 AM - 10:25 AM</span>
+                    </div>
+                    <div class="period" data-start="10:25" data-end="11:10" data-teacher="junaidh ust">
+                        <span class="period-name">aqeeda</span>
+                        <span class="period-time">10:25 AM - 11:10 AM</span>
+                    </div>
+                    <div class="period" data-start="11:20" data-end="12:05" data-teacher="badharudheen ust">
+                        <span class="period-name">fiqh</span>
+                        <span class="period-time">11:20 AM - 12:05 PM</span>
+                    </div>
+                    <div class="period" data-start="12:05" data-end="12:50" data-teacher="jmashad ust">
+                        <span class="period-name">tareeq</span>
+                        <span class="period-time">12:05 PM - 12:50 PM</span>
+                    </div>
+                    <div class="period" data-start="14:00" data-end="14:40" data-teacher="aboobacker ust">
+                        <span class="period-name">English</span>
+                        <span class="period-time">2:00 PM - 2:40 PM</span>
+                    </div>
+                    <div class="period" data-start="14:50" data-end="15:30" data-teacher="TBA">
+                        <span class="period-name">maths</span>
+                        <span class="period-time">2:50 PM - 3:30 PM</span>
+                    </div>
+                    <div class="period" data-start="15:30" data-end="16:10" data-teacher="basith ust">
+                        <span class="period-name">adab</span>
+                        <span class="period-time">3:30 PM - 4:10 PM</span>
+                    </div>
+                </div>
+                <!-- Wednesday Schedule (9 periods) -->
+                <div class="daily-schedule" id="wednesday-schedule">
+                    <div class="period" data-start="07:45" data-end="08:30" data-teacher="fawaz ust">
+                        <span class="period-name">hadees</span>
+                        <span class="period-time">7:45 AM - 8:30 AM</span>
+                    </div>
+                    <div class="period" data-start="08:30" data-end="09:15" data-teacher="badharudheen ust">
+                        <span class="period-name">nahv</span>
+                        <span class="period-time">8:30 AM - 9:15 AM</span>
+                    </div>
+                    <div class="period" data-start="09:40" data-end="10:25" data-teacher="aboobacker ust">
+                        <span class="period-name">English</span>
+                        <span class="period-time">9:40 AM - 10:25 AM</span>
+                    </div>
+                    <div class="period" data-start="10:25" data-end="11:10" data-teacher="TBA">
+                        <span class="period-name">History</span>
+                        <span class="period-time">10:25 AM - 11:10 AM</span>
+                    </div>
+                    <div class="period" data-start="11:20" data-end="12:05" data-teacher="highness ust">
+                        <span class="period-name">physics</span>
+                        <span class="period-time">11:20 AM - 12:05 PM</span>
+                    </div>
+                    <div class="period" data-start="12:05" data-end="12:50" data-teacher="junaidh ust">
+                        <span class="period-name">aqeeda</span>
+                        <span class="period-time">12:05 PM - 12:50 PM</span>
+                    </div>
+                    <div class="period" data-start="14:00" data-end="14:40" data-teacher="hisham ust">
+                        <span class="period-name">urdu</span>
+                        <span class="period-time">2:00 PM - 2:40 PM</span>
+                    </div>
+                    <div class="period" data-start="14:50" data-end="15:30" data-teacher="TBA">
+                        <span class="period-name">maths</span>
+                        <span class="period-time">2:50 PM - 3:30 PM</span>
+                    </div>
+                    <div class="period" data-start="15:30" data-end="16:10" data-teacher="badharudheen ust">
+                        <span class="period-name">fiqh</span>
+                        <span class="period-time">3:30 PM - 4:10 PM</span>
+                    </div>
+                </div>
+                <!-- Thursday Schedule (9 periods) -->
+                <div class="daily-schedule" id="thursday-schedule">
+                    <div class="period" data-start="07:45" data-end="08:30" data-teacher="junaidh ust">
+                        <span class="period-name">aqeeda</span>
+                        <span class="period-time">7:45 AM - 8:30 AM</span>
+                    </div>
+                    <div class="period" data-start="08:30" data-end="09:15" data-teacher="fawaz ust">
+                        <span class="period-name">hadees</span>
+                        <span class="period-time">8:30 AM - 9:15 AM</span>
+                    </div>
+                    <div class="period" data-start="09:40" data-end="10:25" data-teacher="basith ust">
+                        <span class="period-name">adab</span>
+                        <span class="period-time">9:40 AM - 10:25 AM</span>
+                    </div>
+                    <div class="period" data-start="10:25" data-end="11:10" data-teacher="jmashad ust">
+                        <span class="period-name">malayalam</span>
+                        <span class="period-time">10:25 AM - 11:10 AM</span>
+                    </div>
+                    <div class="period" data-start="11:20" data-end="12:05" data-teacher="suhail ust">
+                        <span class="period-name">hindi</span>
+                        <span class="period-time">11:20 AM - 12:05 PM</span>
+                    </div>
+                    <div class="period" data-start="12:05" data-end="12:50" data-teacher="highness ust">
+                        <span class="period-name">physics</span>
+                        <span class="period-time">12:05 PM - 12:50 PM</span>
+                    </div>
+                    <div class="period" data-start="14:00" data-end="14:40" data-teacher="junaidh ust">
+                        <span class="period-name">pkv</span>
+                        <span class="period-time">2:00 PM - 2:40 PM</span>
+                    </div>
+                    <div class="period" data-start="14:50" data-end="15:30" data-teacher="junaidh ust">
+                        <span class="period-name">pkv</span>
+                        <span class="period-time">2:50 PM - 3:30 PM</span>
+                    </div>
+                    <div class="period" data-start="15:30" data-end="16:10" data-teacher="junaidh ust">
+                        <span class="period-name">pkv</span>
+                        <span class="period-time">3:30 PM - 4:10 PM</span>
+                    </div>
+                </div>
+                <!-- Friday (No Schedule) -->
+                <div class="daily-schedule" id="friday-schedule">
+                    <div class="no-schedule">no classes today</div>
+                </div>
+                <!-- Saturday Schedule (9 periods) -->
+                <div class="daily-schedule" id="saturday-schedule">
+                    <div class="period" data-start="07:45" data-end="08:30" data-teacher="jabir ust">
+                        <span class="period-name">geography</span>
+                        <span class="period-time">7:45 AM - 8:30 AM</span>
+                    </div>
+                    <div class="period" data-start="08:30" data-end="09:15" data-teacher="hisham ust">
+                        <span class="period-name">tasawwuf</span>
+                        <span class="period-time">8:30 AM - 9:15 AM</span>
+                    </div>
+                    <div class="period" data-start="09:40" data-end="10:25" data-teacher="highness ust">
+                        <span class="period-name">Chemistry</span>
+                        <span class="period-time">9:40 AM - 10:25 AM</span>
+                    </div>
+                    <div class="period" data-start="10:25" data-end="11:10" data-teacher="hisham ust">
+                        <span class="period-name">urdu</span>
+                        <span class="period-time">10:25 AM - 11:10 AM</span>
+                    </div>
+                    <div class="period" data-start="11:20" data-end="12:05" data-teacher="badharudheen ust">
+                        <span class="period-name">fiqh</span>
+                        <span class="period-time">11:20 AM - 12:05 PM</span>
+                    </div>
+                    <div class="period" data-start="12:05" data-end="12:50" data-teacher="suhail ust">
+                        <span class="period-name">hindi</span>
+                        <span class="period-time">12:05 PM - 12:50 PM</span>
+                    </div>
+                    <div class="period" data-start="14:00" data-end="14:40" data-teacher="junaidh ust">
+                        <span class="period-name">aqeeda</span>
+                        <span class="period-time">2:00 PM - 2:40 PM</span>
+                    </div>
+                    <div class="period" data-start="14:50" data-end="15:30" data-teacher="faiz ust">
+                        <span class="period-name">t&c</span>
+                        <span class="period-time">2:50 PM - 3:30 PM</span>
+                    </div>
+                    <div class="period" data-start="15:30" data-end="16:10" data-teacher="badharudheen ust">
+                        <span class="period-name">nahv</span>
+                        <span class="period-time">3:30 PM - 4:10 PM</span>
+                    </div>
+                </div>
+                <!-- Sunday Schedule (9 periods) -->
+                <div class="daily-schedule" id="sunday-schedule">
+                    <div class="period" data-start="07:45" data-end="08:30" data-teacher="jmashad ust">
+                        <span class="period-name">malayalam</span>
+                        <span class="period-time">7:45 AM - 8:30 AM</span>
+                    </div>
+                    <div class="period" data-start="08:30" data-end="09:15" data-teacher="badharudheen ust">
+                        <span class="period-name">fiqh</span>
+                        <span class="period-time">8:30 AM - 9:15 AM</span>
+                    </div>
+                    <div class="period" data-start="09:40" data-end="10:25" data-teacher="faiz ust">
+                        <span class="period-name">t&c</span>
+                        <span class="period-time">9:40 AM - 10:25 AM</span>
+                    </div>
+                    <div class="period" data-start="10:25" data-end="11:10" data-teacher="jabir ust">
+                        <span class="period-name">Biology</span>
+                        <span class="period-time">10:25 AM - 11:10 AM</span>
+                    </div>
+                    <div class="period" data-start="11:20" data-end="12:05" data-teacher="aboobacker ust">
+                        <span class="period-name">English</span>
+                        <span class="period-time">11:20 AM - 12:05 PM</span>
+                    </div>
+                    <div class="period" data-start="12:05" data-end="12:50" data-teacher="TBA">
+                        <span class="period-name">maths</span>
+                        <span class="period-time">12:05 PM - 12:50 PM</span>
+                    </div>
+                    <div class="period" data-start="14:00" data-end="14:40" data-teacher="basith ust">
+                        <span class="period-name">adab</span>
+                        <span class="period-time">2:00 PM - 2:40 PM</span>
+                    </div>
+                    <div class="period" data-start="14:50" data-end="15:30" data-teacher="hisham ust">
+                        <span class="period-name">urdu</span>
+                        <span class="period-time">2:50 PM - 3:30 PM</span>
+                    </div>
+                    <div class="period" data-start="15:30" data-end="16:10" data-teacher="fawaz ust">
+                        <span class="period-name">hadees</span>
+                        <span class="period-time">3:30 PM - 4:10 PM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="end-period-audio" src="overp.mp3"></audio>
+
+    <script>
+        // Placeholder image URLs
+        const image1 = "h.jpg";
+        const image2 = "d.jpg";
+        const image3 = "e.jpg";
+        const image4 = "c.jpg";
+        const image5 = "i.jpg";
+        const image6 = "j.jpg";
+        const image7 = "l.jpg";
+        const image8 = "m.jpg";
+        const image9 = "n.jpg";
+        const images = [image1, image2, image3, image4, image5, image6, image7, image8, image9];
+
+        let currentImageIndex = 0;
+
+        function updateBackground() {
+            document.body.style.backgroundImage = `url(${images[currentImageIndex]})`;
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+        }
+
+        // Initial background
+        updateBackground();
+
+        // Switch background every 20 minutes (1200000 milliseconds)
+        setInterval(updateBackground, 1200000);
+
+        function updateClockAndSchedule() {
+            const now = new Date();
+            
+            // Format time for 12-hour clock display
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const hoursString = String(hours).padStart(2, '0');
+            const timeString = `${hoursString}:${minutes}:${seconds} ${ampm}`;
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${minutes}`;
+            
+            // Format date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', options);
+            
+            // Update DOM for clock
+            document.getElementById('time').textContent = timeString;
+            document.getElementById('date').textContent = dateString;
+
+            // Determine current day and select schedule
+            const dayOfWeek = now.getDay();
+            const scheduleIds = {
+                1: 'monday-schedule',
+                2: 'tuesday-schedule',
+                3: 'wednesday-schedule',
+                4: 'thursday-schedule',
+                5: 'friday-schedule',
+                6: 'saturday-schedule',
+                0: 'sunday-schedule'
+            };
+            const activeScheduleId = scheduleIds[dayOfWeek];
+
+            // Hide all schedules and show the active one
+            document.querySelectorAll('.daily-schedule').forEach(schedule => {
+                schedule.classList.remove('active');
+            });
+            const activeSchedule = document.getElementById(activeScheduleId);
+            if (activeSchedule) {
+                activeSchedule.classList.add('active');
+            }
+
+            // Highlight active period and update teacher
+            let activePeriodFound = false;
+            let teacherName = "class is not in session";
+
+            if (activeScheduleId !== 'friday-schedule') {
+                const periods = activeSchedule.querySelectorAll('.period');
+                periods.forEach(period => {
+                    const startTime = period.getAttribute('data-start');
+                    const endTime = period.getAttribute('data-end');
+                    const teacher = period.getAttribute('data-teacher');
+                    
+                    if (isTimeInRange(currentTime, startTime, endTime)) {
+                        period.classList.add('active');
+                        teacherName = teacher;
+                        activePeriodFound = true;
+                    } else {
+                        period.classList.remove('active');
+                    }
+
+                    // Play audio within 5 seconds of period end
+                    const endTimeMinutes = timeToMinutes(endTime);
+                    const currentMinutes = timeToMinutes(currentTime);
+                    if (Math.abs(currentMinutes - endTimeMinutes) <= 5 / 60) {
+                        const audio = document.getElementById('end-period-audio');
+                        audio.play();
+                    }
+                });
+
+                // Check if school is over or hasn't started
+                if (periods.length > 0) {
+                    const firstPeriod = periods[0];
+                    const lastPeriod = periods[periods.length - 1];
+                    const firstPeriodStart = firstPeriod.getAttribute('data-start');
+                    const lastPeriodEnd = lastPeriod.getAttribute('data-end');
+                    const currentMinutes = timeToMinutes(currentTime);
+                    const firstPeriodStartMinutes = timeToMinutes(firstPeriodStart);
+                    const lastPeriodEndMinutes = timeToMinutes(lastPeriodEnd);
+
+                    if (!activePeriodFound) {
+                        if (currentMinutes < firstPeriodStartMinutes) {
+                            teacherName = "class has not started yet";
+                        } else if (currentMinutes > lastPeriodEndMinutes) {
+                            teacherName = "Period is over - alhidaya class ended";
+                        } else {
+                            teacherName = "Between periods - No class in session";
+                        }
+                    }
+                }
+            } else {
+                teacherName = "No classes today";
+            }
+
+            document.getElementById('teacher-name').textContent = teacherName;
+        }
+
+        function isTimeInRange(current, start, end) {
+            const currentMinutes = timeToMinutes(current);
+            const startMinutes = timeToMinutes(start);
+            const endMinutes = timeToMinutes(end);
+            return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+        }
+
+        function timeToMinutes(time) {
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        // Update clock and schedule every second
+        setInterval(updateClockAndSchedule, 1000);
+        
+        // Initial call to avoid delay
+        updateClockAndSchedule();
+    </script>
+</body>
+</html>
